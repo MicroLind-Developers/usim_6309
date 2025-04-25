@@ -5,3 +5,4 @@ machdep.h
 *.bak
 *.sublime-workspace
 usim
+**/build/

@@ -3,6 +3,7 @@
 //	usim.h
 //
 //	(C) R.P.Bellis 1994
+//  Modified by E.Lind 2023 for 6309
 //
 //
 
@@ -65,6 +66,7 @@ public:
 	std::function<void()>	abort = ::abort;
 	virtual void		invalid(const char*);
 	virtual void		run();
+    virtual void		run(uint32_t cycles);
 	virtual void		tick();
 	virtual void		halt();
 	virtual void		reset();
@@ -75,24 +77,28 @@ public:
 
 };
 
-class USimMotorola : virtual public USim {
+class USimBE : virtual public USim {
 
-// Memory access functions taking target byte order into account
+// Memory access functions taking target byte order (Intel) into account
 public:
 	virtual Word		fetch_word();
-
 	virtual Word		read_word(Word offset);
 	virtual void		write_word(Word offset, Word val);
 
+    virtual DWord		fetch_dword();
+    virtual DWord		read_dword(Word offset);
+    virtual void		write_dword(Word offset, DWord val);
 };
 
-class USimIntel : virtual public USim {
+class USimLE : virtual public USim {
 
-// Memory access functions taking target byte order into account
+// Memory access functions taking target byte order (Motorola) into account
 public:
 	virtual Word		fetch_word();
-
 	virtual Word		read_word(Word offset);
 	virtual void		write_word(Word offset, Word val);
 
+    virtual DWord		fetch_dword();
+    virtual DWord		read_dword(Word offset);
+    virtual void		write_dword(Word offset, DWord val);
 };

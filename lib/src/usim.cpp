@@ -22,6 +22,15 @@ void USim::run()
 	}
 }
 
+void USim::run(uint32_t cycles)
+{
+    halted = false;
+    while (!halted && cycles) {
+        tick();
+        --cycles;
+    }
+}
+
 void USim::tick()
 {
 	// assume one cycle happens every time
@@ -109,10 +118,10 @@ void USim::write(Word offset, Byte val)
 }
 
 //----------------------------------------------------------------------------
-// Word memory access routines for big-endian (Motorola type)
+// Memory access routines for big-endian (Motorola type)
 //----------------------------------------------------------------------------
 
-Word USimMotorola::fetch_word()
+Word USimBE::fetch_word()
 {
 	Word		tmp;
 
@@ -122,7 +131,7 @@ Word USimMotorola::fetch_word()
 	return tmp;
 }
 
-Word USimMotorola::read_word(Word offset)
+Word USimBE::read_word(Word offset)
 {
 	Word		tmp;
 
@@ -132,17 +141,49 @@ Word USimMotorola::read_word(Word offset)
 	return tmp;
 }
 
-void USimMotorola::write_word(Word offset, Word val)
+void USimBE::write_word(Word offset, Word val)
 {
 	write(offset++, (Byte)(val >> 8));
 	write(offset, (Byte)val);
 }
 
+DWord USimBE::fetch_dword()
+{
+    DWord		tmp;
+
+    tmp  = fetch() << 24;
+    tmp |= fetch() << 16;
+    tmp |= fetch() << 8;
+    tmp |= fetch();
+
+    return tmp;
+}
+
+DWord USimBE::read_dword(Word offset)
+{
+    DWord		tmp;
+
+    tmp  = read(offset++) << 24;
+    tmp |= read(offset++) << 16;
+    tmp |= read(offset++) << 8;
+    tmp |= read(offset);
+
+    return tmp;
+}
+
+void USimBE::write_dword(Word offset, DWord val)
+{
+    write(offset++, (Byte)(val >> 24));
+    write(offset++, (Byte)(val >> 16));
+    write(offset++, (Byte)(val >> 8));
+    write(offset, (Byte)val);
+}
+
 //----------------------------------------------------------------------------
-// Word memory access routines for little-endian (Intel type)
+// Memory access routines for little-endian (Intel type)
 //----------------------------------------------------------------------------
 
-Word USimIntel::fetch_word()
+Word USimLE::fetch_word()
 {
 	Word		tmp;
 
@@ -152,7 +193,7 @@ Word USimIntel::fetch_word()
 	return tmp;
 }
 
-Word USimIntel::read_word(Word offset)
+Word USimLE::read_word(Word offset)
 {
 	Word		tmp;
 
@@ -162,8 +203,41 @@ Word USimIntel::read_word(Word offset)
 	return tmp;
 }
 
-void USimIntel::write_word(Word offset, Word val)
+void USimLE::write_word(Word offset, Word val)
 {
 	write(offset++, (Byte)val);
 	write(offset, (Byte)(val >> 8));
 }
+
+DWord USimLE::fetch_dword()
+{
+    DWord		tmp;
+
+    tmp  = fetch();
+    tmp |= fetch() << 8;
+    tmp |= fetch() << 16;
+    tmp |= fetch() << 24;
+
+    return tmp;
+}
+
+DWord USimLE::read_dword(Word offset)
+{
+    DWord		tmp;
+
+    tmp  = read(offset++);
+    tmp |= read(offset++) << 8;
+    tmp |= read(offset++) << 16;
+    tmp |= read(offset) << 24;
+
+    return tmp;
+}
+
+void USimLE::write_dword(Word offset, DWord val)
+{
+    write(offset++, (Byte)val);
+    write(offset++, (Byte)(val >> 8));
+    write(offset++, (Byte)(val >> 16));
+    write(offset, (Byte)(val >> 24));
+}
+

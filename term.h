@@ -3,19 +3,20 @@
 //	term.h
 //
 //	(C) R.P.Bellis 1994
+// 	Modified by E.Lind 2023 for xr88c92
 //
 
 #pragma once
 
 #include <cstdio>
 #include "usim.h"
-#include "mc6850.h"
+#include "xr88c92.h"
 
 #ifdef _POSIX_SOURCE
 #include <termios.h>
 #endif
 
-class Terminal :  virtual public mc6850_impl {
+class Terminal :  virtual public xr88c92_impl {
 
 protected:
 	USim&				sys;

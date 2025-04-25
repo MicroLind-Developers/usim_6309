@@ -13,11 +13,7 @@
 #include "usim.h"
 #include "bits.h"
 
-#ifndef USIM_MACHDEP_H
-#include "machdep.h"
-#endif
-
-class mc6809 : virtual public USimMotorola {
+class mc6809 : virtual public USimBE {
 
 protected: // Processor addressing modes
 
@@ -38,7 +34,7 @@ protected:	// Processor registers
 	union {
 		Word			d;	// Combined accumulator
 		struct {
-#ifdef MACH_BYTE_ORDER_MSB_FIRST
+#ifdef BYTE_ORDER_MSB_FIRST
 			Byte		a;	// Accumulator a
 			Byte		b;	// Accumulator b
 #else
